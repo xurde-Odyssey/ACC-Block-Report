@@ -867,9 +867,9 @@
           <label>CTM Capacity (kN)<input id="ctmCapacity" type="number" value="2000"></label>
           <label>Loading Rate (N/mm²/s)<input id="loadingRate" type="number" step="0.01" value="0.15"></label>
           <label>CTM Calibration<input id="ctmCal" value="Valid"></label>
-          <label>Balance Precision<input id="balancePrecision" value="0.1 g"></label>
-          <label>Bath Condition<input id="bathCondition" value="Clean, stabilized"></label>
-          <label>Balance Calibration<input id="balanceCal" value="Valid"></label>
+          <label>Chamber Temperature (°C)<input id="chamberTemp" type="number" step="0.1" value="27.0"></label>
+          <label>Chamber RH (%)<input id="chamberRh" type="number" step="0.1" value="65.0"></label>
+          <label>Chamber Calibration<input id="chamberCal" value="Valid"></label>
         </div>
       </section>
 
@@ -999,7 +999,7 @@
               </thead>
               <tbody>
                 <tr><td>Compression Testing Machine</td><td id="outCtm"></td><td data-out="ctmCal"></td></tr>
-                <tr><td>Buoyancy Balance Setup</td><td id="outBalance"></td><td data-out="balanceCal"></td></tr>
+                <tr><td>Humidity Chamber</td><td id="outChamber"></td><td data-out="chamberCal"></td></tr>
               </tbody>
             </table>
           </section>
@@ -1129,9 +1129,8 @@
     const minStrength = 4.0;
     const fields = [
       'reportNo', 'standard', 'testingDate', 'samplingDate', 'sampleDescription',
-      'nomL', 'nomW', 'nomH', 'ctmCapacity', 'loadingRate', 'ctmCal', 'balancePrecision',
-      'bathCondition', 'balanceCal', 'remarks',
-      'preparedBy', 'approvedBy'
+      'nomL', 'nomW', 'nomH', 'ctmCapacity', 'loadingRate', 'ctmCal',
+      'chamberTemp', 'chamberRh', 'chamberCal', 'remarks', 'preparedBy', 'approvedBy'
     ];
 
     let marginUnit = 'mm';
@@ -1228,7 +1227,7 @@
       $('outSampleDescription').textContent = read('sampleDescription') || '-';
       $('outNominal').textContent = `${read('nomL') || '-'} x ${read('nomW') || '-'} x ${read('nomH') || '-'} mm`;
       $('outCtm').textContent = `${read('ctmCapacity') || '-'} kN, ${read('loadingRate') || '-'} N/mm²/s`;
-      $('outBalance').textContent = `${read('balancePrecision') || '-'}, ${read('bathCondition') || '-'}`;
+      $('outChamber').textContent = `${read('chamberTemp') || '-'} °C, ${read('chamberRh') || '-'} % RH`;
 
       const strengthValues = strengthRows.map((row) => strengthCalc(row).strength);
       $('strengthReportRows').innerHTML = strengthRows.map((row) => {
@@ -1279,9 +1278,9 @@
         ctmCapacity: '2000',
         loadingRate: '0.15',
         ctmCal: 'Valid until 30-Nov-2026',
-        balancePrecision: '0.1 g',
-        bathCondition: 'Clean, stabilized',
-        balanceCal: 'Valid until 30-Sep-2026',
+        chamberTemp: '27.0',
+        chamberRh: '65.0',
+        chamberCal: 'Valid',
         remarks: 'Based on the above test results, the submitted AAC block sample conforms to the minimum compressive strength requirement of 4.0 N/mm² for the declared class, subject to the tested specimens and stated laboratory conditions.',
         preparedBy: 'Site Engineer',
         approvedBy: 'Lab Manager'
