@@ -28,6 +28,12 @@
       box-sizing: border-box;
     }
 
+    html,
+    body {
+      height: 100%;
+      overflow-x: hidden;
+    }
+
     body {
       margin: 0;
       background: #e8edf3;
@@ -47,11 +53,13 @@
       min-height: 100vh;
       display: grid;
       grid-template-columns: minmax(360px, 520px) 1fr;
+      overflow-x: hidden;
     }
 
     .controls {
       height: 100vh;
       overflow: auto;
+      overflow-anchor: none;
       padding: 18px;
       background: #f8fafc;
       border-right: 1px solid #d6dde6;
@@ -122,6 +130,26 @@
       border-radius: 8px;
       padding: 14px;
       margin-bottom: 12px;
+    }
+
+    .made-by-footer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      padding: 10px 0 4px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .made-by-footer svg {
+      width: 14px;
+      height: 14px;
+      color: #1f4e79;
+      fill: currentColor;
+      flex: 0 0 auto;
     }
 
     .section h2 {
@@ -227,6 +255,73 @@
       min-height: auto;
     }
 
+    .switch-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .switch-row.single {
+      grid-template-columns: 1fr;
+      margin-bottom: 10px;
+    }
+
+    .switch {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      border: 1px solid #cbd5df;
+      border-radius: 6px;
+      padding: 9px;
+      background: #fff;
+      color: #344054;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .switch input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .switch-track {
+      position: relative;
+      width: 42px;
+      height: 22px;
+      border-radius: 999px;
+      background: #cbd5df;
+      flex: 0 0 auto;
+      transition: background 0.16s ease;
+    }
+
+    .switch-track::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(31, 41, 51, 0.22);
+      transition: transform 0.16s ease;
+    }
+
+    .switch input:checked + .switch-track {
+      background: var(--accent);
+    }
+
+    .switch input:checked + .switch-track::after {
+      transform: translateX(20px);
+    }
+
+    .is-hidden {
+      display: none !important;
+    }
+
     .mini-table {
       width: 100%;
       border-collapse: collapse;
@@ -278,7 +373,9 @@
 
     .preview-wrap {
       height: 100vh;
+      min-width: 0;
       overflow: auto;
+      overflow-anchor: none;
       padding: 28px;
       display: grid;
       justify-items: center;
@@ -293,6 +390,7 @@
       width: 210mm;
       min-height: 297mm;
       background: var(--paper);
+      overflow-anchor: none;
       box-shadow: var(--shadow);
       padding: var(--page-margin);
       position: relative;
@@ -682,8 +780,17 @@
     }
 
     @media (max-width: 1180px) {
+      html,
+      body {
+        height: auto;
+        overflow: auto;
+      }
+
       .app {
+        height: auto;
+        min-height: 100vh;
         grid-template-columns: 1fr;
+        overflow: visible;
       }
 
       .controls {
@@ -707,6 +814,7 @@
 
       .grid-2,
       .grid-3,
+      .switch-row,
       .radio-row,
       .report-grid,
       .signatures {
@@ -849,7 +957,7 @@
         <h2>General Details</h2>
         <div class="grid-2">
           <label>Report Number<input id="reportNo" value="LAB/AAC/2026/08-104"></label>
-          <label>Test Standard Reference<input id="standard" value="IS 2185 Part 3 / ASTM C1693"></label>
+          <label>Test Standard Reference<input id="standard" value="NS 573:2076"></label>
           <label>Testing Date<input id="testingDate" type="date" value="2026-08-25"></label>
           <label>Sampling Date<input id="samplingDate" type="date" value="2026-08-21"></label>
           <label>Sample Description<input id="sampleDescription" value="Grade 1 / Class 4.0"></label>
@@ -858,6 +966,13 @@
           <label>Length L (mm)<input id="nomL" type="number" value="600"></label>
           <label>Width W (mm)<input id="nomW" type="number" value="200"></label>
           <label>Height H (mm)<input id="nomH" type="number" value="150"></label>
+        </div>
+        <div class="switch-row">
+          <label class="switch">
+            <span>Show General Details in Result</span>
+            <input id="showGeneralDetails" type="checkbox" checked>
+            <span class="switch-track" aria-hidden="true"></span>
+          </label>
         </div>
       </section>
 
@@ -877,6 +992,13 @@
         <div class="table-tools">
           <h2 style="margin:0">Compressive Strength</h2>
           <button class="link-button" id="addStrength" type="button">+ Add specimen</button>
+        </div>
+        <div class="switch-row single">
+          <label class="switch">
+            <span>Show Result Parameter</span>
+            <input id="showStrengthResultParameter" type="checkbox" checked>
+            <span class="switch-track" aria-hidden="true"></span>
+          </label>
         </div>
         <table class="mini-table" id="strengthInputTable">
           <thead>
@@ -898,6 +1020,13 @@
           <h2 style="margin:0">Oven-Dry Density</h2>
           <button class="link-button" id="addDensity" type="button">+ Add specimen</button>
         </div>
+        <div class="switch-row single">
+          <label class="switch">
+            <span>Show Result Parameter</span>
+            <input id="showDensityResultParameter" type="checkbox" checked>
+            <span class="switch-track" aria-hidden="true"></span>
+          </label>
+        </div>
         <table class="mini-table" id="densityInputTable">
           <thead>
             <tr>
@@ -917,13 +1046,19 @@
         <h2>Conclusion & Sign-off</h2>
         <label>
           Remarks & Conformity Statement
-          <textarea id="remarks">Based on the above test results, the submitted AAC block sample conforms to the minimum compressive strength requirement of 4.0 N/mm² for the declared class, subject to the tested specimens and stated laboratory conditions.</textarea>
+          <textarea id="remarks">Based on the above test results, the submitted AAC block sample confirms to the minimum compressive strength requirement of 3.0 N/mm² and the dry density of 550 kg/m³ for the declared class, subject to the tested specimens and stated laboratory conditions.</textarea>
         </label>
         <div class="grid-2" style="margin-top:10px">
           <label>Prepared By Engineer<input id="preparedBy" value="Site Engineer"></label>
           <label>Approved By<input id="approvedBy" value="Lab Manager"></label>
         </div>
       </section>
+      <footer class="made-by-footer">
+        <span>Made by Xurde with</span>
+        <svg viewBox="0 0 24 24" aria-label="blue heart" role="img">
+          <path d="M12 21.35 10.55 20.03C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.08C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35Z"></path>
+        </svg>
+      </footer>
     </aside>
 
     <section class="preview-wrap" aria-label="A4 print preview">
@@ -977,7 +1112,7 @@
             <span>Autoclaved Aerated Concrete (AAC) Block Compliance Report</span>
           </div>
 
-          <section class="report-box">
+          <section class="report-box" id="generalDetailsReport">
             <h3>General Details</h3>
             <table class="kv">
               <tbody>
@@ -1015,12 +1150,12 @@
                   <th>Area (mm²)</th>
                   <th>Failure Load (kN)</th>
                   <th>Strength (N/mm²)</th>
-                  <th>Result</th>
+                  <th class="strength-result-parameter">Result</th>
                 </tr>
               </thead>
               <tbody id="strengthReportRows"></tbody>
               <tfoot>
-                <tr class="summary-row"><td colspan="5">Average Compressive Strength</td><td id="avgStrength"></td><td id="overallStrength"></td></tr>
+                <tr class="summary-row"><td colspan="5">Average Compressive Strength</td><td id="avgStrength"></td><td class="strength-result-parameter" id="overallStrength"></td></tr>
               </tfoot>
             </table>
           </section>
@@ -1089,11 +1224,12 @@
                   <th>Suspended Weight Ww (g)</th>
                   <th>Volume V (cm³)</th>
                   <th>Dry Density (kg/m³)</th>
+                  <th class="density-result-parameter">Result</th>
                 </tr>
               </thead>
               <tbody id="densityReportRows"></tbody>
               <tfoot>
-                <tr class="summary-row"><td colspan="4">Average Dry Density</td><td id="avgDensity"></td></tr>
+                <tr class="summary-row"><td colspan="4">Average Dry Density</td><td id="avgDensity"></td><td class="density-result-parameter" id="overallDensity"></td></tr>
               </tfoot>
             </table>
           </section>
@@ -1126,7 +1262,9 @@
   </main>
 
   <script>
-    const minStrength = 4.0;
+    const minStrength = 3.0;
+    const minDryDensity = 550;
+    const maxDryDensity = 650;
     const fields = [
       'reportNo', 'standard', 'testingDate', 'samplingDate', 'sampleDescription',
       'nomL', 'nomW', 'nomH', 'ctmCapacity', 'loadingRate', 'ctmCal',
@@ -1135,14 +1273,14 @@
 
     let marginUnit = 'mm';
     let strengthRows = [
-      { id: 'AAC-C-01', length: 600, width: 200, load: 520 },
-      { id: 'AAC-C-02', length: 598, width: 201, load: 505 },
-      { id: 'AAC-C-03', length: 601, width: 199, load: 515 }
+      { id: 'AAC-C-01', length: 200, width: 150, load: 87 },
+      { id: 'AAC-C-02', length: 200, width: 150, load: 93 },
+      { id: 'AAC-C-03', length: 200, width: 150, load: 90 }
     ];
     let densityRows = [
-      { id: 'AAC-D-01', wd: 7800, ww: 6450, volume: '' },
-      { id: 'AAC-D-02', wd: 7650, ww: 6310, volume: '' },
-      { id: 'AAC-D-03', wd: 7720, ww: 6375, volume: '' }
+      { id: 'AAC-D-01', wd: 2506, ww: 0, volume: 4500 },
+      { id: 'AAC-D-02', wd: 2460, ww: 0, volume: 4500 },
+      { id: 'AAC-D-03', wd: 2477, ww: 0, volume: 4500 }
     ];
 
     const $ = (id) => document.getElementById(id);
@@ -1167,6 +1305,13 @@
         : '<span class="badge fail">FAIL</span>';
     }
 
+    function rangeBadge(value, min, max) {
+      if (!Number.isFinite(value)) return '<span class="badge muted-badge">-</span>';
+      return value >= min && value <= max
+        ? '<span class="badge pass">PASS</span>'
+        : '<span class="badge fail">FAIL</span>';
+    }
+
     function read(id) {
       const element = $(id);
       return element ? element.value : '';
@@ -1185,6 +1330,11 @@
       return { volume, density };
     }
 
+    function isChecked(id) {
+      const element = $(id);
+      return element ? element.checked : false;
+    }
+
     function renderEditableTables() {
       $('strengthInputTable').querySelector('tbody').innerHTML = strengthRows.map((row, index) => {
         const calc = strengthCalc(row);
@@ -1193,7 +1343,7 @@
           <td><input data-strength="${index}" data-key="length" type="number" value="${row.length}"></td>
           <td><input data-strength="${index}" data-key="width" type="number" value="${row.width}"></td>
           <td><input data-strength="${index}" data-key="load" type="number" step="0.1" value="${row.load}"></td>
-          <td class="readonly">${fixed(calc.strength)}</td>
+          <td class="readonly" data-strength-calc="${index}">${fixed(calc.strength)}</td>
           <td><button class="link-button" type="button" data-remove-strength="${index}" ${strengthRows.length <= 3 ? 'disabled' : ''}>Remove</button></td>
         </tr>`;
       }).join('');
@@ -1205,7 +1355,7 @@
           <td><input data-density="${index}" data-key="wd" type="number" step="0.1" value="${row.wd}"></td>
           <td><input data-density="${index}" data-key="ww" type="number" step="0.1" value="${row.ww}"></td>
           <td><input data-density="${index}" data-key="volume" type="number" step="0.1" placeholder="${fixed(n(row.wd) - n(row.ww), 1)}" value="${row.volume}"></td>
-          <td class="readonly">${fixed(calc.density, 1)}</td>
+          <td class="readonly" data-density-calc="${index}">${fixed(calc.density, 1)}</td>
           <td><button class="link-button" type="button" data-remove-density="${index}" ${densityRows.length <= 3 ? 'disabled' : ''}>Remove</button></td>
         </tr>`;
       }).join('');
@@ -1228,6 +1378,13 @@
       $('outNominal').textContent = `${read('nomL') || '-'} x ${read('nomW') || '-'} x ${read('nomH') || '-'} mm`;
       $('outCtm').textContent = `${read('ctmCapacity') || '-'} kN, ${read('loadingRate') || '-'} N/mm²/s`;
       $('outChamber').textContent = `${read('chamberTemp') || '-'} °C, ${read('chamberRh') || '-'} % RH`;
+      $('generalDetailsReport').classList.toggle('is-hidden', !isChecked('showGeneralDetails'));
+      document.querySelectorAll('.strength-result-parameter').forEach((node) => {
+        node.classList.toggle('is-hidden', !isChecked('showStrengthResultParameter'));
+      });
+      document.querySelectorAll('.density-result-parameter').forEach((node) => {
+        node.classList.toggle('is-hidden', !isChecked('showDensityResultParameter'));
+      });
 
       const strengthValues = strengthRows.map((row) => strengthCalc(row).strength);
       $('strengthReportRows').innerHTML = strengthRows.map((row) => {
@@ -1239,7 +1396,7 @@
           <td>${fixed(calc.area, 0)}</td>
           <td>${row.load || '-'}</td>
           <td>${fixed(calc.strength)}</td>
-          <td>${passBadge(calc.strength)}</td>
+          <td class="strength-result-parameter ${isChecked('showStrengthResultParameter') ? '' : 'is-hidden'}">${passBadge(calc.strength)}</td>
         </tr>`;
       }).join('');
 
@@ -1256,9 +1413,12 @@
           <td>${row.ww || '-'}</td>
           <td>${fixed(calc.volume, 1)}</td>
           <td>${fixed(calc.density, 1)}</td>
+          <td class="density-result-parameter ${isChecked('showDensityResultParameter') ? '' : 'is-hidden'}">${rangeBadge(calc.density, minDryDensity, maxDryDensity)}</td>
         </tr>`;
       }).join('');
-      $('avgDensity').textContent = fixed(avg(densityValues), 1);
+      const averageDensity = avg(densityValues);
+      $('avgDensity').textContent = fixed(averageDensity, 1);
+      $('overallDensity').innerHTML = rangeBadge(averageDensity, minDryDensity, maxDryDensity);
     }
 
     function refresh() {
@@ -1266,10 +1426,42 @@
       updatePreview();
     }
 
+    function updateEditableCalculations() {
+      document.querySelectorAll('[data-strength-calc]').forEach((cell) => {
+        const calc = strengthCalc(strengthRows[Number(cell.dataset.strengthCalc)]);
+        cell.textContent = fixed(calc.strength);
+      });
+      document.querySelectorAll('[data-density-calc]').forEach((cell) => {
+        const index = Number(cell.dataset.densityCalc);
+        const calc = densityCalc(densityRows[index]);
+        const volumeInput = document.querySelector(`[data-density="${index}"][data-key="volume"]`);
+        cell.textContent = fixed(calc.density, 1);
+        if (volumeInput) volumeInput.placeholder = fixed(n(densityRows[index].wd) - n(densityRows[index].ww), 1);
+      });
+    }
+
+    function updateTableInputPreview() {
+      const controls = document.querySelector('.controls');
+      const preview = document.querySelector('.preview-wrap');
+      const scrollState = {
+        windowX: window.scrollX,
+        windowY: window.scrollY,
+        controlsTop: controls ? controls.scrollTop : 0,
+        previewTop: preview ? preview.scrollTop : 0
+      };
+
+      updateEditableCalculations();
+      updatePreview();
+
+      if (controls) controls.scrollTop = scrollState.controlsTop;
+      if (preview) preview.scrollTop = scrollState.previewTop;
+      window.scrollTo(scrollState.windowX, scrollState.windowY);
+    }
+
     function loadSampleData() {
       const values = {
         reportNo: 'LAB/AAC/2026/08-104',
-        standard: 'IS 2185 Part 3 / ASTM C1693',
+        standard: 'NS 573:2076',
         testingDate: '2026-08-25',
         samplingDate: '2026-08-21',
         nomL: '600',
@@ -1281,7 +1473,7 @@
         chamberTemp: '27.0',
         chamberRh: '65.0',
         chamberCal: 'Valid',
-        remarks: 'Based on the above test results, the submitted AAC block sample conforms to the minimum compressive strength requirement of 4.0 N/mm² for the declared class, subject to the tested specimens and stated laboratory conditions.',
+        remarks: 'Based on the above test results, the submitted AAC block sample confirms to the minimum compressive strength requirement of 3.0 N/mm² and the dry density of 550 kg/m³ for the declared class, subject to the tested specimens and stated laboratory conditions.',
         preparedBy: 'Site Engineer',
         approvedBy: 'Lab Manager'
       };
@@ -1289,18 +1481,21 @@
       $('sampleDescription').value = 'Grade 1 / Class 4.0';
       $('letterheadMargin').value = 25;
       $('footerMargin').value = 25;
+      $('showGeneralDetails').checked = true;
+      $('showStrengthResultParameter').checked = true;
+      $('showDensityResultParameter').checked = true;
       marginUnit = 'mm';
       document.querySelectorAll('.unit-toggle button').forEach((button) => button.classList.toggle('active', button.dataset.unit === marginUnit));
       document.querySelector('input[name="mode"][value="preprinted"]').checked = true;
       strengthRows = [
-        { id: 'AAC-C-01', length: 600, width: 200, load: 520 },
-        { id: 'AAC-C-02', length: 598, width: 201, load: 505 },
-        { id: 'AAC-C-03', length: 601, width: 199, load: 515 }
+        { id: 'AAC-C-01', length: 200, width: 150, load: 87 },
+        { id: 'AAC-C-02', length: 200, width: 150, load: 93 },
+        { id: 'AAC-C-03', length: 200, width: 150, load: 90 }
       ];
       densityRows = [
-        { id: 'AAC-D-01', wd: 7800, ww: 6450, volume: '' },
-        { id: 'AAC-D-02', wd: 7650, ww: 6310, volume: '' },
-        { id: 'AAC-D-03', wd: 7720, ww: 6375, volume: '' }
+        { id: 'AAC-D-01', wd: 2506, ww: 0, volume: 4500 },
+        { id: 'AAC-D-02', wd: 2460, ww: 0, volume: 4500 },
+        { id: 'AAC-D-03', wd: 2477, ww: 0, volume: 4500 }
       ];
       refresh();
     }
@@ -1313,6 +1508,9 @@
       $('sampleDescription').value = '';
       $('letterheadMargin').value = 25;
       $('footerMargin').value = 25;
+      $('showGeneralDetails').checked = true;
+      $('showStrengthResultParameter').checked = true;
+      $('showDensityResultParameter').checked = true;
       strengthRows = [
         { id: 'AAC-C-01', length: '', width: '', load: '' },
         { id: 'AAC-C-02', length: '', width: '', load: '' },
@@ -1326,40 +1524,19 @@
       refresh();
     }
 
-    function refreshAndRestore(selector, start, end) {
-      refresh();
-      const next = document.querySelector(selector);
-      if (next) {
-        next.focus();
-        if (typeof next.setSelectionRange === 'function' && start !== null && end !== null) {
-          next.setSelectionRange(start, end);
-        }
-      }
-    }
-
-    function selectionOf(input) {
-      try {
-        return { start: input.selectionStart, end: input.selectionEnd };
-      } catch {
-        return { start: null, end: null };
-      }
-    }
-
     document.addEventListener('input', (event) => {
       const strengthIndex = event.target.dataset.strength;
       const densityIndex = event.target.dataset.density;
       if (strengthIndex !== undefined) {
         const key = event.target.dataset.key;
-        const selection = selectionOf(event.target);
         strengthRows[strengthIndex][key] = event.target.value;
-        refreshAndRestore(`[data-strength="${strengthIndex}"][data-key="${key}"]`, selection.start, selection.end);
+        updateTableInputPreview();
         return;
       }
       if (densityIndex !== undefined) {
         const key = event.target.dataset.key;
-        const selection = selectionOf(event.target);
         densityRows[densityIndex][key] = event.target.value;
-        refreshAndRestore(`[data-density="${densityIndex}"][data-key="${key}"]`, selection.start, selection.end);
+        updateTableInputPreview();
         return;
       }
       updatePreview();
