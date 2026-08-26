@@ -864,9 +864,6 @@
       <section class="section">
         <h2>Testing Equipment Status</h2>
         <div class="grid-3">
-          <label>Chamber Temp (°C)<input id="chamberTemp" type="number" step="0.1" value="27.0"></label>
-          <label>Humidity RH (%)<input id="humidity" type="number" step="0.1" value="65.0"></label>
-          <label>Chamber Calibration<input id="chamberCal" value="Valid"></label>
           <label>CTM Capacity (kN)<input id="ctmCapacity" type="number" value="2000"></label>
           <label>Loading Rate (N/mm²/s)<input id="loadingRate" type="number" step="0.01" value="0.15"></label>
           <label>CTM Calibration<input id="ctmCal" value="Valid"></label>
@@ -1001,7 +998,6 @@
                 <tr><th>Equipment</th><th>Parameter</th><th>Calibration Status</th></tr>
               </thead>
               <tbody>
-                <tr><td>Humidity Chamber</td><td id="outChamber"></td><td data-out="chamberCal"></td></tr>
                 <tr><td>Compression Testing Machine</td><td id="outCtm"></td><td data-out="ctmCal"></td></tr>
                 <tr><td>Buoyancy Balance Setup</td><td id="outBalance"></td><td data-out="balanceCal"></td></tr>
               </tbody>
@@ -1133,8 +1129,7 @@
     const minStrength = 4.0;
     const fields = [
       'reportNo', 'standard', 'testingDate', 'samplingDate', 'sampleDescription',
-      'nomL', 'nomW', 'nomH', 'chamberTemp', 'humidity', 'chamberCal',
-      'ctmCapacity', 'loadingRate', 'ctmCal', 'balancePrecision',
+      'nomL', 'nomW', 'nomH', 'ctmCapacity', 'loadingRate', 'ctmCal', 'balancePrecision',
       'bathCondition', 'balanceCal', 'remarks',
       'preparedBy', 'approvedBy'
     ];
@@ -1232,7 +1227,6 @@
 
       $('outSampleDescription').textContent = read('sampleDescription') || '-';
       $('outNominal').textContent = `${read('nomL') || '-'} x ${read('nomW') || '-'} x ${read('nomH') || '-'} mm`;
-      $('outChamber').textContent = `${read('chamberTemp') || '-'} °C, ${read('humidity') || '-'} % RH`;
       $('outCtm').textContent = `${read('ctmCapacity') || '-'} kN, ${read('loadingRate') || '-'} N/mm²/s`;
       $('outBalance').textContent = `${read('balancePrecision') || '-'}, ${read('bathCondition') || '-'}`;
 
@@ -1282,9 +1276,6 @@
         nomL: '600',
         nomW: '200',
         nomH: '150',
-        chamberTemp: '27.0',
-        humidity: '65.0',
-        chamberCal: 'Valid until 31-Dec-2026',
         ctmCapacity: '2000',
         loadingRate: '0.15',
         ctmCal: 'Valid until 30-Nov-2026',
