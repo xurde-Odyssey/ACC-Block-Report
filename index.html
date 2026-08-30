@@ -31,7 +31,7 @@
     html,
     body {
       height: 100%;
-      overflow-x: hidden;
+      overflow: hidden;
     }
 
     body {
@@ -50,14 +50,16 @@
     }
 
     .app {
-      min-height: 100vh;
+      height: 100vh;
+      min-height: 0;
       display: grid;
       grid-template-columns: minmax(360px, 520px) 1fr;
-      overflow-x: hidden;
+      overflow: hidden;
     }
 
     .controls {
       height: 100vh;
+      min-height: 0;
       overflow: auto;
       overflow-anchor: none;
       padding: 18px;
@@ -122,6 +124,20 @@
       color: #fff;
       background: #b42318;
       border-color: #912018;
+    }
+
+    .cache-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+
+    .cache-status {
+      min-height: 16px;
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
     }
 
     .section {
@@ -229,6 +245,11 @@
       background: #fff;
       color: var(--accent-dark);
       box-shadow: 0 1px 3px rgba(31, 41, 51, 0.12);
+    }
+
+    .table-design-toggle {
+      width: 100%;
+      grid-template-columns: 1fr 1fr;
     }
 
     .radio-row {
@@ -347,6 +368,14 @@
       border-radius: 4px;
     }
 
+    .table-scroll {
+      overflow-x: auto;
+    }
+
+    .visual-input-table {
+      min-width: 720px;
+    }
+
     .table-tools {
       display: flex;
       justify-content: space-between;
@@ -373,6 +402,7 @@
 
     .preview-wrap {
       height: 100vh;
+      min-height: 0;
       min-width: 0;
       overflow: auto;
       overflow-anchor: none;
@@ -419,7 +449,7 @@
       min-height: calc(297mm - (var(--page-margin) * 2));
       display: flex;
       flex-direction: column;
-      gap: 6mm;
+      gap: 5mm;
       padding-top: var(--letterhead-space);
       padding-bottom: var(--letterpad-footer-space);
       width: 100%;
@@ -657,6 +687,38 @@
       font-weight: 800;
     }
 
+    .simple-table-design .report-box {
+      border-color: #000;
+    }
+
+    .simple-table-design .report-box h3,
+    .simple-table-design .report-title,
+    .simple-table-design .report-table th,
+    .simple-table-design .summary-row td,
+    .simple-table-design .kv th {
+      background: #fff;
+    }
+
+    .simple-table-design .report-box h3 {
+      border-bottom-color: #000;
+    }
+
+    .simple-table-design .report-table th,
+    .simple-table-design .report-table td {
+      border-color: #000;
+    }
+
+    .simple-table-design .kv th,
+    .simple-table-design .kv td {
+      border-bottom-color: #000;
+    }
+
+    .simple-table-design .badge {
+      color: #000;
+      background: #fff;
+      border-color: #000;
+    }
+
     .badge {
       display: inline-block;
       min-width: 18mm;
@@ -686,7 +748,7 @@
     }
 
     .remarks {
-      min-height: 24mm;
+      min-height: 18mm;
       padding: 2.2mm;
       white-space: pre-wrap;
       font-size: 8.8pt;
@@ -697,12 +759,12 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 18mm;
-      margin-top: 24mm;
+      margin-top: 10mm;
       page-break-inside: avoid;
     }
 
     .signature {
-      padding-top: 14mm;
+      padding-top: 9mm;
       border-top: 1px solid #111827;
       font-size: 8.8pt;
       page-break-inside: avoid;
@@ -782,28 +844,31 @@
     @media (max-width: 1180px) {
       html,
       body {
-        height: auto;
-        overflow: auto;
+        height: 100%;
+        overflow: hidden;
       }
 
       .app {
-        height: auto;
-        min-height: 100vh;
+        height: 100vh;
+        min-height: 0;
         grid-template-columns: 1fr;
-        overflow: visible;
+        grid-template-rows: minmax(280px, 42vh) minmax(0, 1fr);
+        overflow: hidden;
       }
 
       .controls {
         height: auto;
+        min-height: 0;
         max-height: none;
+        overflow: auto;
         border-right: 0;
         border-bottom: 1px solid #d6dde6;
       }
 
       .preview-wrap {
         height: auto;
-        min-height: 100vh;
-        overflow: visible;
+        min-height: 0;
+        overflow: auto;
       }
     }
 
@@ -847,6 +912,8 @@
       body {
         width: 210mm;
         min-height: 297mm;
+        height: auto;
+        overflow: visible;
         background: #fff;
       }
 
@@ -866,6 +933,8 @@
 
       .app {
         display: block;
+        height: auto;
+        overflow: visible;
       }
 
       .preview-wrap {
@@ -923,6 +992,16 @@
       </div>
 
       <section class="section">
+        <h2>Local Data Cache</h2>
+        <div class="cache-actions">
+          <button class="btn btn-primary" id="saveCacheBtn" type="button">Save Data</button>
+          <button class="btn" id="loadCacheBtn" type="button">Load Saved</button>
+          <button class="btn btn-danger" id="clearCacheBtn" type="button">Clear Saved</button>
+        </div>
+        <p class="cache-status" id="cacheStatus"></p>
+      </section>
+
+      <section class="section">
         <h2>Header & Letterhead</h2>
         <div class="radio-row">
           <label class="radio-pill">
@@ -951,6 +1030,15 @@
           </label>
           <div></div>
         </div>
+        <div style="margin-top:10px">
+          <label>
+            Table Design
+            <div class="unit-toggle table-design-toggle" aria-label="Table design">
+              <button type="button" class="active" data-table-design="default">Default</button>
+              <button type="button" data-table-design="simple">Simple</button>
+            </div>
+          </label>
+        </div>
       </section>
 
       <section class="section">
@@ -959,6 +1047,7 @@
           <label>Report Number<input id="reportNo" value="LAB/AAC/2026/08-104"></label>
           <label>Test Standard Reference<input id="standard" value="NS 573:2076"></label>
           <label>Testing Date<input id="testingDate" type="date" value="2026-08-25"></label>
+          <label>Casting Date<input id="castingDate" type="date" value="2026-08-20"></label>
           <label>Sampling Date<input id="samplingDate" type="date" value="2026-08-21"></label>
           <label>Sample Description<input id="sampleDescription" value="Grade 1 / Class 4.0"></label>
         </div>
@@ -977,15 +1066,21 @@
       </section>
 
       <section class="section">
-        <h2>Testing Equipment Status</h2>
-        <div class="grid-3">
-          <label>CTM Capacity (kN)<input id="ctmCapacity" type="number" value="2000"></label>
-          <label>Loading Rate (N/mm²/s)<input id="loadingRate" type="number" step="0.01" value="0.15"></label>
-          <label>CTM Calibration<input id="ctmCal" value="Valid"></label>
-          <label>Chamber Temperature (°C)<input id="chamberTemp" type="number" step="0.1" value="27.0"></label>
-          <label>Chamber RH (%)<input id="chamberRh" type="number" step="0.1" value="65.0"></label>
-          <label>Chamber Calibration<input id="chamberCal" value="Valid"></label>
+        <div class="table-tools">
+          <h2 style="margin:0">Testing Equipment Status</h2>
+          <button class="link-button" id="addEquipment" type="button">+ Add equipment</button>
         </div>
+        <table class="mini-table" id="equipmentInputTable">
+          <thead>
+            <tr>
+              <th>Equipment</th>
+              <th>Parameter</th>
+              <th>Calibration Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
       </section>
 
       <section class="section">
@@ -1040,6 +1135,41 @@
           </thead>
           <tbody></tbody>
         </table>
+      </section>
+
+      <section class="section">
+        <div class="table-tools">
+          <h2 style="margin:0">Visual Inspection & Dimensional Test</h2>
+          <button class="link-button" id="addVisualInspection" type="button">+ Add specimen</button>
+        </div>
+        <div class="grid-3" style="margin-bottom:10px">
+          <label>Nominal Length (mm)<input id="visualNomLength" type="number" value="600"></label>
+          <label>Nominal Height (mm)<input id="visualNomHeight" type="number" value="200"></label>
+          <label>
+            Nominal Thickness (mm)
+            <select id="visualNomThickness">
+              <option value="100">100</option>
+              <option value="150" selected>150</option>
+              <option value="200">200</option>
+            </select>
+          </label>
+        </div>
+        <div class="table-scroll">
+          <table class="mini-table visual-input-table" id="visualInspectionInputTable">
+            <thead>
+              <tr>
+                <th>Specimen ID</th>
+                <th>Length mm</th>
+                <th>Height mm</th>
+                <th>Thickness mm</th>
+                <th>Visual defects / Broken edges</th>
+                <th>Remarks</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
       </section>
 
       <section class="section">
@@ -1118,6 +1248,7 @@
               <tbody>
                 <tr><th>Report Number</th><td data-out="reportNo"></td></tr>
                 <tr><th>Testing Date</th><td data-out="testingDate"></td></tr>
+                <tr><th>Casting Date</th><td data-out="castingDate"></td></tr>
                 <tr><th>Sampling Date</th><td data-out="samplingDate"></td></tr>
                 <tr><th>Sample Description</th><td id="outSampleDescription"></td></tr>
                 <tr><th>Nominal Dimensions</th><td id="outNominal"></td></tr>
@@ -1132,10 +1263,7 @@
               <thead>
                 <tr><th>Equipment</th><th>Parameter</th><th>Calibration Status</th></tr>
               </thead>
-              <tbody>
-                <tr><td>Compression Testing Machine</td><td id="outCtm"></td><td data-out="ctmCal"></td></tr>
-                <tr><td>Humidity Chamber</td><td id="outChamber"></td><td data-out="chamberCal"></td></tr>
-              </tbody>
+              <tbody id="equipmentReportRows"></tbody>
             </table>
           </section>
 
@@ -1235,6 +1363,29 @@
           </section>
 
           <section class="report-box">
+            <h3>Visual Inspection & Dimensional Test</h3>
+            <table class="report-table">
+              <thead>
+                <tr>
+                  <th>Specimen ID</th>
+                  <th>Length (mm)</th>
+                  <th>Height (mm)</th>
+                  <th>Thickness (mm)</th>
+                  <th>Visual Defects / Broken Edges</th>
+                  <th>Remarks</th>
+                </tr>
+              </thead>
+              <tbody id="visualInspectionReportRows"></tbody>
+              <tfoot>
+                <tr class="summary-row">
+                  <td colspan="5">Visual Inspection & Dimensional Test</td>
+                  <td id="overallVisualInspection"></td>
+                </tr>
+              </tfoot>
+            </table>
+          </section>
+
+          <section class="report-box">
             <h3>Conclusion & Conformity Statement</h3>
             <div class="remarks" data-out="remarks"></div>
           </section>
@@ -1265,13 +1416,20 @@
     const minStrength = 3.0;
     const minDryDensity = 550;
     const maxDryDensity = 650;
+    const cacheKey = 'aac-qc-report-data-v1';
     const fields = [
-      'reportNo', 'standard', 'testingDate', 'samplingDate', 'sampleDescription',
-      'nomL', 'nomW', 'nomH', 'ctmCapacity', 'loadingRate', 'ctmCal',
-      'chamberTemp', 'chamberRh', 'chamberCal', 'remarks', 'preparedBy', 'approvedBy'
+      'reportNo', 'standard', 'testingDate', 'castingDate', 'samplingDate', 'sampleDescription',
+      'nomL', 'nomW', 'nomH', 'visualNomLength', 'visualNomHeight', 'visualNomThickness',
+      'remarks', 'preparedBy', 'approvedBy'
     ];
 
     let marginUnit = 'mm';
+    let tableDesign = 'default';
+    let equipmentRows = [
+      { equipment: 'Compression Testing Machine', parameter: '2000 kN, 0.15 N/mm²/s', calibration: 'Valid' },
+      { equipment: 'Hot Air Oven', parameter: '105-110 °C', calibration: 'Valid' },
+      { equipment: 'Steel Scale', parameter: '600 mm', calibration: 'Valid' }
+    ];
     let strengthRows = [
       { id: 'AAC-C-01', length: 200, width: 150, load: 87 },
       { id: 'AAC-C-02', length: 200, width: 150, load: 93 },
@@ -1282,6 +1440,11 @@
       { id: 'AAC-D-02', wd: 2460, ww: 0, volume: 4500 },
       { id: 'AAC-D-03', wd: 2477, ww: 0, volume: 4500 }
     ];
+    let visualInspectionRows = [
+      { id: 'AAC-V-01', length: 600, height: 200, thickness: 150, defects: 'No visible defects' },
+      { id: 'AAC-V-02', length: 600, height: 200, thickness: 150, defects: 'No broken edges' },
+      { id: 'AAC-V-03', length: 600, height: 200, thickness: 150, defects: 'No visible defects' }
+    ];
 
     const $ = (id) => document.getElementById(id);
     const n = (value) => Number.parseFloat(value);
@@ -1291,6 +1454,110 @@
       const clean = values.filter(Number.isFinite);
       return clean.length ? clean.reduce((sum, value) => sum + value, 0) / clean.length : NaN;
     };
+    const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    }[char]));
+
+    function setCacheStatus(message) {
+      const status = $('cacheStatus');
+      if (status) status.textContent = message;
+    }
+
+    function syncOptionButtons() {
+      document.querySelectorAll('.unit-toggle button').forEach((button) => {
+        if (button.dataset.unit) button.classList.toggle('active', button.dataset.unit === marginUnit);
+      });
+      document.querySelectorAll('[data-table-design]').forEach((button) => {
+        button.classList.toggle('active', button.dataset.tableDesign === tableDesign);
+      });
+    }
+
+    function collectReportState() {
+      const values = {};
+      fields.forEach((id) => {
+        const element = $(id);
+        if (element) values[id] = element.value;
+      });
+
+      return {
+        values,
+        letterheadMargin: read('letterheadMargin'),
+        footerMargin: read('footerMargin'),
+        marginUnit,
+        tableDesign,
+        mode: document.querySelector('input[name="mode"]:checked')?.value || 'preprinted',
+        showGeneralDetails: isChecked('showGeneralDetails'),
+        showStrengthResultParameter: isChecked('showStrengthResultParameter'),
+        showDensityResultParameter: isChecked('showDensityResultParameter'),
+        equipmentRows,
+        strengthRows,
+        densityRows,
+        visualInspectionRows
+      };
+    }
+
+    function applyReportState(state) {
+      if (!state || typeof state !== 'object') return false;
+      Object.entries(state.values || {}).forEach(([id, value]) => {
+        const element = $(id);
+        if (element) element.value = value;
+      });
+
+      if (state.letterheadMargin !== undefined) $('letterheadMargin').value = state.letterheadMargin;
+      if (state.footerMargin !== undefined) $('footerMargin').value = state.footerMargin;
+      marginUnit = state.marginUnit === 'px' ? 'px' : 'mm';
+      tableDesign = state.tableDesign === 'simple' ? 'simple' : 'default';
+      const mode = state.mode === 'digital' ? 'digital' : 'preprinted';
+      const modeInput = document.querySelector(`input[name="mode"][value="${mode}"]`);
+      if (modeInput) modeInput.checked = true;
+
+      $('showGeneralDetails').checked = state.showGeneralDetails !== false;
+      $('showStrengthResultParameter').checked = state.showStrengthResultParameter !== false;
+      $('showDensityResultParameter').checked = state.showDensityResultParameter !== false;
+
+      if (Array.isArray(state.equipmentRows)) equipmentRows = state.equipmentRows;
+      if (Array.isArray(state.strengthRows)) strengthRows = state.strengthRows;
+      if (Array.isArray(state.densityRows)) densityRows = state.densityRows;
+      if (Array.isArray(state.visualInspectionRows)) visualInspectionRows = state.visualInspectionRows;
+
+      syncOptionButtons();
+      refresh();
+      return true;
+    }
+
+    function saveReportCache() {
+      try {
+        localStorage.setItem(cacheKey, JSON.stringify(collectReportState()));
+        setCacheStatus(`Saved locally at ${new Date().toLocaleTimeString()}.`);
+      } catch (error) {
+        setCacheStatus('Could not save data in this browser.');
+      }
+    }
+
+    function loadReportCache(showMissingMessage = true) {
+      try {
+        const raw = localStorage.getItem(cacheKey);
+        if (!raw) {
+          if (showMissingMessage) setCacheStatus('No saved data found.');
+          return false;
+        }
+        const loaded = applyReportState(JSON.parse(raw));
+        if (loaded) setCacheStatus('Loaded saved local data.');
+        return loaded;
+      } catch (error) {
+        setCacheStatus('Saved data could not be loaded.');
+        return false;
+      }
+    }
+
+    function clearReportCache() {
+      localStorage.removeItem(cacheKey);
+      setCacheStatus('Saved local data cleared.');
+    }
 
     function formatDate(value) {
       if (!value) return '-';
@@ -1330,12 +1597,70 @@
       return { volume, density };
     }
 
+    function dimensionRange(nominal, tolerance) {
+      return {
+        min: Number.isFinite(nominal) ? nominal - tolerance : NaN,
+        max: Number.isFinite(nominal) ? nominal + tolerance : NaN
+      };
+    }
+
+    function visualInspectionRanges() {
+      return {
+        length: dimensionRange(n(read('visualNomLength')), 5),
+        height: dimensionRange(n(read('visualNomHeight')), 3),
+        thickness: dimensionRange(n(read('visualNomThickness')), 3)
+      };
+    }
+
+    function valueInRange(value, range) {
+      return Number.isFinite(value) && value >= range.min && value <= range.max;
+    }
+
+    function visualInspectionRowPasses(row) {
+      const ranges = visualInspectionRanges();
+      return valueInRange(n(row.length), ranges.length)
+        && valueInRange(n(row.height), ranges.height)
+        && valueInRange(n(row.thickness), ranges.thickness);
+    }
+
+    function visualInspectionSummary() {
+      const averageLength = avg(visualInspectionRows.map((row) => n(row.length)));
+      const averageHeight = avg(visualInspectionRows.map((row) => n(row.height)));
+      const averageThickness = avg(visualInspectionRows.map((row) => n(row.thickness)));
+      const { length: lengthRange, height: heightRange, thickness: thicknessRange } = visualInspectionRanges();
+      const passes = [
+        [averageLength, lengthRange],
+        [averageHeight, heightRange],
+        [averageThickness, thicknessRange]
+      ].every(([value, range]) => valueInRange(value, range));
+
+      return { averageLength, averageHeight, averageThickness, lengthRange, heightRange, thicknessRange, passes };
+    }
+
+    function conformityRemarks(remarks, passes) {
+      const text = remarks || '-';
+      if (passes) return text;
+      const failedText = text
+        .replace(/\bconfirms\s+to\b/i, 'does not conform to')
+        .replace(/\bconforms\s+to\b/i, 'does not conform to')
+        .replace(/\bconfirms\b/i, 'does not confirm')
+        .replace(/\bconforms\b/i, 'does not conform');
+      return failedText === text ? `${text}\n\nOverall conformity: FAIL.` : failedText;
+    }
+
     function isChecked(id) {
       const element = $(id);
       return element ? element.checked : false;
     }
 
     function renderEditableTables() {
+      $('equipmentInputTable').querySelector('tbody').innerHTML = equipmentRows.map((row, index) => `<tr>
+        <td><input data-equipment="${index}" data-key="equipment" value="${escapeHtml(row.equipment)}"></td>
+        <td><input data-equipment="${index}" data-key="parameter" value="${escapeHtml(row.parameter)}"></td>
+        <td><input data-equipment="${index}" data-key="calibration" value="${escapeHtml(row.calibration)}"></td>
+        <td><button class="link-button" type="button" data-remove-equipment="${index}" ${equipmentRows.length <= 1 ? 'disabled' : ''}>Remove</button></td>
+      </tr>`).join('');
+
       $('strengthInputTable').querySelector('tbody').innerHTML = strengthRows.map((row, index) => {
         const calc = strengthCalc(row);
         return `<tr>
@@ -1359,11 +1684,24 @@
           <td><button class="link-button" type="button" data-remove-density="${index}" ${densityRows.length <= 3 ? 'disabled' : ''}>Remove</button></td>
         </tr>`;
       }).join('');
+
+      $('visualInspectionInputTable').querySelector('tbody').innerHTML = visualInspectionRows.map((row, index) => `<tr>
+        <td><input data-visual-inspection="${index}" data-key="id" value="${escapeHtml(row.id)}"></td>
+        <td><input data-visual-inspection="${index}" data-key="length" type="number" value="${escapeHtml(row.length)}"></td>
+        <td><input data-visual-inspection="${index}" data-key="height" type="number" value="${escapeHtml(row.height)}"></td>
+        <td><input data-visual-inspection="${index}" data-key="thickness" type="number" value="${escapeHtml(row.thickness)}"></td>
+        <td><input data-visual-inspection="${index}" data-key="defects" value="${escapeHtml(row.defects)}"></td>
+        <td class="readonly" data-visual-inspection-remark="${index}">${visualInspectionRowPasses(row) ? 'PASS' : 'FAIL'}</td>
+        <td><button class="link-button" type="button" data-remove-visual-inspection="${index}" ${visualInspectionRows.length <= 3 ? 'disabled' : ''}>Remove</button></td>
+      </tr>`).join('');
     }
 
     function updatePreview() {
       const mode = document.querySelector('input[name="mode"]:checked').value;
-      document.querySelectorAll('.paper').forEach((paper) => paper.classList.toggle('digital', mode === 'digital'));
+      document.querySelectorAll('.paper').forEach((paper) => {
+        paper.classList.toggle('digital', mode === 'digital');
+        paper.classList.toggle('simple-table-design', tableDesign === 'simple');
+      });
       const marginValue = read('letterheadMargin') || 0;
       const footerValue = read('footerMargin') || 0;
       document.documentElement.style.setProperty('--letterhead-space', `${marginValue}${marginUnit}`);
@@ -1376,8 +1714,11 @@
 
       $('outSampleDescription').textContent = read('sampleDescription') || '-';
       $('outNominal').textContent = `${read('nomL') || '-'} x ${read('nomW') || '-'} x ${read('nomH') || '-'} mm`;
-      $('outCtm').textContent = `${read('ctmCapacity') || '-'} kN, ${read('loadingRate') || '-'} N/mm²/s`;
-      $('outChamber').textContent = `${read('chamberTemp') || '-'} °C, ${read('chamberRh') || '-'} % RH`;
+      $('equipmentReportRows').innerHTML = equipmentRows.map((row) => `<tr>
+        <td>${escapeHtml(row.equipment) || '-'}</td>
+        <td>${escapeHtml(row.parameter) || '-'}</td>
+        <td>${escapeHtml(row.calibration) || '-'}</td>
+      </tr>`).join('');
       $('generalDetailsReport').classList.toggle('is-hidden', !isChecked('showGeneralDetails'));
       document.querySelectorAll('.strength-result-parameter').forEach((node) => {
         node.classList.toggle('is-hidden', !isChecked('showStrengthResultParameter'));
@@ -1403,6 +1744,7 @@
       const averageStrength = avg(strengthValues);
       $('avgStrength').textContent = fixed(averageStrength);
       $('overallStrength').innerHTML = passBadge(averageStrength);
+      const strengthPasses = Number.isFinite(averageStrength) && averageStrength >= minStrength;
 
       const densityValues = densityRows.map((row) => densityCalc(row).density);
       $('densityReportRows').innerHTML = densityRows.map((row) => {
@@ -1419,6 +1761,24 @@
       const averageDensity = avg(densityValues);
       $('avgDensity').textContent = fixed(averageDensity, 1);
       $('overallDensity').innerHTML = rangeBadge(averageDensity, minDryDensity, maxDryDensity);
+      const densityPasses = Number.isFinite(averageDensity) && averageDensity >= minDryDensity && averageDensity <= maxDryDensity;
+
+      const visualSummary = visualInspectionSummary();
+      $('visualInspectionReportRows').innerHTML = visualInspectionRows.map((row) => `<tr>
+        <td>${escapeHtml(row.id) || '-'}</td>
+        <td>${escapeHtml(row.length) || '-'}</td>
+        <td>${escapeHtml(row.height) || '-'}</td>
+        <td>${escapeHtml(row.thickness) || '-'}</td>
+        <td>${escapeHtml(row.defects) || '-'}</td>
+        <td>${visualInspectionRowPasses(row) ? '<span class="badge pass">PASS</span>' : '<span class="badge fail">FAIL</span>'}</td>
+      </tr>`).join('');
+      $('overallVisualInspection').innerHTML = visualSummary.passes
+        ? '<span class="badge pass">PASS</span>'
+        : '<span class="badge fail">FAIL</span>';
+      document.querySelector('[data-out="remarks"]').textContent = conformityRemarks(
+        read('remarks'),
+        strengthPasses && densityPasses && visualSummary.passes
+      );
     }
 
     function refresh() {
@@ -1437,6 +1797,9 @@
         const volumeInput = document.querySelector(`[data-density="${index}"][data-key="volume"]`);
         cell.textContent = fixed(calc.density, 1);
         if (volumeInput) volumeInput.placeholder = fixed(n(densityRows[index].wd) - n(densityRows[index].ww), 1);
+      });
+      document.querySelectorAll('[data-visual-inspection-remark]').forEach((cell) => {
+        cell.textContent = visualInspectionRowPasses(visualInspectionRows[Number(cell.dataset.visualInspectionRemark)]) ? 'PASS' : 'FAIL';
       });
     }
 
@@ -1463,16 +1826,14 @@
         reportNo: 'LAB/AAC/2026/08-104',
         standard: 'NS 573:2076',
         testingDate: '2026-08-25',
+        castingDate: '2026-08-20',
         samplingDate: '2026-08-21',
         nomL: '600',
         nomW: '200',
         nomH: '150',
-        ctmCapacity: '2000',
-        loadingRate: '0.15',
-        ctmCal: 'Valid until 30-Nov-2026',
-        chamberTemp: '27.0',
-        chamberRh: '65.0',
-        chamberCal: 'Valid',
+        visualNomLength: '600',
+        visualNomHeight: '200',
+        visualNomThickness: '150',
         remarks: 'Based on the above test results, the submitted AAC block sample confirms to the minimum compressive strength requirement of 3.0 N/mm² and the dry density of 550 kg/m³ for the declared class, subject to the tested specimens and stated laboratory conditions.',
         preparedBy: 'Site Engineer',
         approvedBy: 'Lab Manager'
@@ -1485,8 +1846,14 @@
       $('showStrengthResultParameter').checked = true;
       $('showDensityResultParameter').checked = true;
       marginUnit = 'mm';
-      document.querySelectorAll('.unit-toggle button').forEach((button) => button.classList.toggle('active', button.dataset.unit === marginUnit));
+      tableDesign = 'default';
+      syncOptionButtons();
       document.querySelector('input[name="mode"][value="preprinted"]').checked = true;
+      equipmentRows = [
+        { equipment: 'Compression Testing Machine', parameter: '2000 kN, 0.15 N/mm²/s', calibration: 'Valid until 30-Nov-2026' },
+        { equipment: 'Hot Air Oven', parameter: '105-110 °C', calibration: 'Valid' },
+        { equipment: 'Steel Scale', parameter: '600 mm', calibration: 'Valid' }
+      ];
       strengthRows = [
         { id: 'AAC-C-01', length: 200, width: 150, load: 87 },
         { id: 'AAC-C-02', length: 200, width: 150, load: 93 },
@@ -1496,6 +1863,11 @@
         { id: 'AAC-D-01', wd: 2506, ww: 0, volume: 4500 },
         { id: 'AAC-D-02', wd: 2460, ww: 0, volume: 4500 },
         { id: 'AAC-D-03', wd: 2477, ww: 0, volume: 4500 }
+      ];
+      visualInspectionRows = [
+        { id: 'AAC-V-01', length: 600, height: 200, thickness: 150, defects: 'No visible defects' },
+        { id: 'AAC-V-02', length: 600, height: 200, thickness: 150, defects: 'No broken edges' },
+        { id: 'AAC-V-03', length: 600, height: 200, thickness: 150, defects: 'No visible defects' }
       ];
       refresh();
     }
@@ -1508,9 +1880,19 @@
       $('sampleDescription').value = '';
       $('letterheadMargin').value = 25;
       $('footerMargin').value = 25;
+      $('visualNomLength').value = 600;
+      $('visualNomHeight').value = 200;
+      $('visualNomThickness').value = 150;
       $('showGeneralDetails').checked = true;
       $('showStrengthResultParameter').checked = true;
       $('showDensityResultParameter').checked = true;
+      tableDesign = 'default';
+      syncOptionButtons();
+      equipmentRows = [
+        { equipment: 'Compression Testing Machine', parameter: '', calibration: '' },
+        { equipment: 'Hot Air Oven', parameter: '105-110 °C', calibration: 'Valid' },
+        { equipment: 'Steel Scale', parameter: '', calibration: 'Valid' }
+      ];
       strengthRows = [
         { id: 'AAC-C-01', length: '', width: '', load: '' },
         { id: 'AAC-C-02', length: '', width: '', load: '' },
@@ -1521,12 +1903,25 @@
         { id: 'AAC-D-02', wd: '', ww: '', volume: '' },
         { id: 'AAC-D-03', wd: '', ww: '', volume: '' }
       ];
+      visualInspectionRows = [
+        { id: 'AAC-V-01', length: '', height: '', thickness: '', defects: '' },
+        { id: 'AAC-V-02', length: '', height: '', thickness: '', defects: '' },
+        { id: 'AAC-V-03', length: '', height: '', thickness: '', defects: '' }
+      ];
       refresh();
     }
 
     document.addEventListener('input', (event) => {
       const strengthIndex = event.target.dataset.strength;
       const densityIndex = event.target.dataset.density;
+      const visualInspectionIndex = event.target.dataset.visualInspection;
+      const equipmentIndex = event.target.dataset.equipment;
+      if (equipmentIndex !== undefined) {
+        const key = event.target.dataset.key;
+        equipmentRows[equipmentIndex][key] = event.target.value;
+        updateTableInputPreview();
+        return;
+      }
       if (strengthIndex !== undefined) {
         const key = event.target.dataset.key;
         strengthRows[strengthIndex][key] = event.target.value;
@@ -1536,6 +1931,12 @@
       if (densityIndex !== undefined) {
         const key = event.target.dataset.key;
         densityRows[densityIndex][key] = event.target.value;
+        updateTableInputPreview();
+        return;
+      }
+      if (visualInspectionIndex !== undefined) {
+        const key = event.target.dataset.key;
+        visualInspectionRows[visualInspectionIndex][key] = event.target.value;
         updateTableInputPreview();
         return;
       }
@@ -1550,6 +1951,11 @@
         document.querySelectorAll('.unit-toggle button').forEach((button) => button.classList.toggle('active', button === event.target));
         updatePreview();
       }
+      if (event.target.dataset.tableDesign) {
+        tableDesign = event.target.dataset.tableDesign;
+        document.querySelectorAll('[data-table-design]').forEach((button) => button.classList.toggle('active', button === event.target));
+        updatePreview();
+      }
       if (event.target.dataset.removeStrength !== undefined) {
         strengthRows.splice(Number(event.target.dataset.removeStrength), 1);
         refresh();
@@ -1558,6 +1964,19 @@
         densityRows.splice(Number(event.target.dataset.removeDensity), 1);
         refresh();
       }
+      if (event.target.dataset.removeVisualInspection !== undefined) {
+        visualInspectionRows.splice(Number(event.target.dataset.removeVisualInspection), 1);
+        refresh();
+      }
+      if (event.target.dataset.removeEquipment !== undefined) {
+        equipmentRows.splice(Number(event.target.dataset.removeEquipment), 1);
+        refresh();
+      }
+    });
+
+    $('addEquipment').addEventListener('click', () => {
+      equipmentRows.push({ equipment: '', parameter: '', calibration: '' });
+      refresh();
     });
 
     $('addStrength').addEventListener('click', () => {
@@ -1570,11 +1989,19 @@
       refresh();
     });
 
+    $('addVisualInspection').addEventListener('click', () => {
+      visualInspectionRows.push({ id: `AAC-V-${String(visualInspectionRows.length + 1).padStart(2, '0')}`, length: '', height: '', thickness: '', defects: '' });
+      refresh();
+    });
+
     $('printBtn').addEventListener('click', () => window.print());
     $('sampleBtn').addEventListener('click', loadSampleData);
     $('resetBtn').addEventListener('click', resetForm);
+    $('saveCacheBtn').addEventListener('click', saveReportCache);
+    $('loadCacheBtn').addEventListener('click', () => loadReportCache(true));
+    $('clearCacheBtn').addEventListener('click', clearReportCache);
 
-    refresh();
+    if (!loadReportCache(false)) refresh();
   </script>
 </body>
 </html>
