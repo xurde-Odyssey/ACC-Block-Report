@@ -474,8 +474,9 @@
     }
 
     .digital .report-content {
-      padding-top: calc(155px - var(--page-margin) + 8mm);
-      padding-bottom: calc(var(--letterpad-footer-space) + 18mm);
+      /* Header is 155px; footer is 65px and sits in the page padding. */
+      padding-top: calc(155px - var(--page-margin) + 4mm);
+      padding-bottom: 3mm;
     }
 
     .header-orange-top {
@@ -911,13 +912,10 @@
       html,
       body {
         width: 210mm;
-        min-height: 297mm;
         height: auto;
+        min-height: 0;
         overflow: visible;
         background: #fff;
-      }
-
-      body {
         margin: 0;
       }
 
@@ -942,25 +940,35 @@
         height: auto;
         overflow: visible;
         padding: 0;
+        gap: 0;
         background: #fff;
       }
 
       .paper {
         width: 210mm;
+        height: 297mm;
         min-height: 297mm;
+        max-height: 297mm;
+        overflow: hidden;
         box-shadow: none;
+        margin: 0;
         padding: var(--page-margin);
         print-color-adjust: exact;
         -webkit-print-color-adjust: exact;
-      }
-
-      .paper:not(:last-child) {
         page-break-after: always;
         break-after: page;
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+
+      .paper:last-child {
+        page-break-after: auto;
+        break-after: auto;
       }
 
       .report-content {
-        min-height: calc(297mm - (var(--page-margin) * 2));
+        min-height: 0;
+        height: calc(297mm - (var(--page-margin) * 2));
       }
 
       .report-box,
